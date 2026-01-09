@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microservices.inventoryservice.mapper.TdInventoryMapper">
+    <select resultType="com.microservices.inventoryservice.model.entity.Inventory" id="getListProductBySku">
+        SELECT
+            <include refid="selectInventory"/>
+        FROM
+            inventory_service.td_inventory
+        WHERE sku_code IN
+        <foreach item="item" collection="skuCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select resultType="com.microservices.inventoryservice.model.entity.Inventory" id="getProductBySku">
+        SELECT
+            <include refid="selectInventory"/>
+        FROM
+            inventory_service.td_inventory
+        WHERE sku_code = #{skuCode}
+    </select>
+
+    <sql id="selectInventory">
+        sku_code,
+        product_name,
+        description,
+        price,
+        quantity
+    </sql>
+
+    <insert parameterType="com.microservices.inventoryservice.model.dto.InventoryRequest" id="saveProduct">
+        INSERT INTO
+            inventory_service.td_inventory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            sku_code,
+            product_name,
+            description,
+            quantity,
+            price
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{skuCode},
+            #{productName},
+            #{description},
+            #{quantity},
+            #{price}
+        </trim>
+    </insert>
+
+    <delete id="deleteProduct">
+        DELETE FROM
+            inventory_service.td_inventory
+        WHERE
+            sku_code = #{skuCode}
+    </delete>
+
+    <update parameterType="com.microservices.inventoryservice.model.dto.InventoryUpdateRequest" id="updateProduct">
+        UPDATE inventory_service.td_inventory
+        <set>
+            <if test="request.productName !=null and request.productName !='' ">
+                product_name = #{request.productName},
+            </if>
+            <if test="request.description != null and request.description != '' ">
+                description = #{request.description},
+            </if>
+            <if test="request.price != null">
+                price = #{request.price},
+            </if>
+            <if test="request.quantity != null">
+                quantity = #{request.quantity}
+            </if>
+        </set>
+        WHERE sku_code = #{skuCode}
+    </update>
+
+    <update id="updateProductStock">
+        UPDATE inventory_service.td_inventory
+        <set>
+            quantity = CASE sku_code
+            <foreach collection="items" item="item">
+                WHEN #{item.skuCode} THEN #{item.qty}
+            </foreach>
+            END
+        </set>
+        WHERE sku_code IN
+        <foreach collection="items" item="item" open="(" separator="," close=")">
+            #{item.skuCode}
+        </foreach>
+    </update>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.microservices.orderservice.mapper.TdOrderItemsMapper">
+    <insert id="insertOrderLineItems">
+        INSERT INTO order_service.td_order_items
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                id,
+                order_number,
+                sku_code,
+                price,
+                quantity
+            </trim>
+        VALUES
+        <foreach collection="itemList" item="d" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                gen_random_uuid(),
+                #{d.orderNumber},
+                #{d.skuCode},
+                #{d.price},
+                #{d.quantity}
+            </trim>
+        </foreach>
+    </insert>
+</mapper>
