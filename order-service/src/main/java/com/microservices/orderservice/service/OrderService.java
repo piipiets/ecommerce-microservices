@@ -3,20 +3,19 @@ package com.microservices.orderservice.service;
 import com.microservices.orderservice.exception.OutOfStockException;
 import com.microservices.orderservice.mapper.TdOrderMapper;
 import com.microservices.orderservice.mapper.TdOrderItemsMapper;
-import com.microservices.orderservice.model.dto.InventoryInfoDto;
-import com.microservices.orderservice.model.dto.InventoryResponse;
-import com.microservices.orderservice.model.dto.OutOfStockItemsDto;
-import com.microservices.orderservice.model.dto.UpdateStockDto;
+import com.microservices.orderservice.model.dto.*;
 import com.microservices.orderservice.model.entity.Order;
 import com.microservices.orderservice.model.entity.OrderItems;
 import com.microservices.orderservice.model.response.DefaultResponse;
 import com.microservices.orderservice.model.response.ResponseMessage;
 import com.microservices.orderservice.util.AppUtil;
+import com.microservices.orderservice.util.interceptor.HeaderHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -37,6 +36,8 @@ public class OrderService {
     private final TdOrderItemsMapper tdOrderItemsMapper;
     private final PlatformTransactionManager transactionManager;
     private final GlobalService globalService;
+    private final KafkaService kafkaService;
+    private final HeaderHolder headerHolder;
 
     public ResponseEntity<DefaultResponse> placeOrder(Order order, String auth) {
         TransactionStatus txStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
@@ -88,6 +89,7 @@ public class OrderService {
             }
 
             transactionManager.commit(txStatus);
+            kafkaService.sendKafka("order-placed", new OrderNotificationDto(order.getOrderNumber(), headerHolder.getEmail()));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new DefaultResponse(ResponseMessage.DATA_CREATED, 201));
         } catch (Exception e) {

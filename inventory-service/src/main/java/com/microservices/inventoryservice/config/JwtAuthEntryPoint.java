@@ -1,11 +1,8 @@
-package com.microservices.orderservice.config;
+package com.microservices.inventoryservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microservices.orderservice.model.response.DefaultResponse;
-import com.microservices.orderservice.util.DateHelper;
+import com.microservices.inventoryservice.model.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -13,7 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @Component
 @Slf4j
@@ -32,11 +30,11 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
         String message = resolveMessage(authException);
 
-        DefaultResponse body = new DefaultResponse(
+        ErrorResponse body = new ErrorResponse(
                 "Unauthorized",
                 message,
-                new Date(),
-                status
+                status,
+                null
         );
 
         response.setStatus(status);
@@ -63,4 +61,3 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         return "Unauthorized";
     }
 }
-

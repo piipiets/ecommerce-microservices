@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        body { font-family: Arial; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+<h2>Order Summary</h2>
+
+<p>Order Number: <b th:text="${orderNumber}"></b></p>
+
+<table>
+    <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+    </tr>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.skuCode}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td th:text="${item.price}"></td>
+    </tr>
+</table>
+
+<p><b>Total: </b><span th:text="${total}"></span></p>
+
+</body>
+</html>
