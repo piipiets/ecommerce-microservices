@@ -2,10 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.microservices.notificationservice.mapper.TdOrderItemsMapper">
     <select id="getItemsByOrderNumber" resultType="com.microservices.notificationservice.model.dto.OrderItems">
-        SELECT
-            sku_code, price, quantity
-        FROM
-            order_service.td_order_items
+        select
+            tio.price, tio.quantity, tio.sku_code, ti.product_name
+        from
+            order_service.td_order_items tio
+        join
+            inventory_service.td_inventory ti on tio.sku_code = ti.sku_code
         WHERE
             order_number = #{orderNumber}
     </select>
