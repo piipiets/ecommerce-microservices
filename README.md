@@ -1,4 +1,13 @@
 This project consists of six microservices built with a microservices architecture and uses PostgreSQL as the primary database.
+<h3>Technologies Used</h3>
+- Java / Spring Boot
+<br> - Spring Cloud (Eureka, API Gateway)
+<br> - PostgreSQL
+<br> - Keycloak
+<br> - Apache Kafka
+<br> - Thymeleaf
+<br> - Docker
+
 <h3>1. Discovery Service</h3>
 The Discovery Service provides a service registry using Netflix Eureka.
 All microservices register themselves with this service to enable dynamic service discovery and communication.
@@ -28,11 +37,3 @@ Its responsibilities include:
 The Notification Service acts as a Kafka consumer. It consumes order events from Kafka and sends order summary notifications to users via email.
 Email content is generated using Thymeleaf templates.
 
-<h3>Technologies Used</h3>
-- Java / Spring Boot
-<br> - Spring Cloud (Eureka, API Gateway)
-<br> - PostgreSQL
-<br> - Keycloak
-<br> - Apache Kafka
-<br> - Thymeleaf
-<br> - Docker
